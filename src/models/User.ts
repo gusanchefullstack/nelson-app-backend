@@ -1,13 +1,15 @@
-import { UserStatus } from "./Enums.js";
-import { type Address } from "./Address.js";
+import type { IAddress } from "../interfaces/IAddress.js";
+import type { IUser } from "../interfaces/IUser.js";
+import type { UserStatus } from "./Enums.js";
 
-export interface User {
-  firstname: string;
-  lastName: string;
-  username: string;
-  password: string;
-  address: Address;
-  email: string;
-  phone: string;
-  status: UserStatus;
+export class User implements IUser {
+  constructor( public firstname: string,
+    public lastName: string,
+    public username: string,
+    public password: string,
+    public address: IAddress,
+    public email: string,
+    public phone: string,
+    public status: UserStatus) {
+  }
 }
