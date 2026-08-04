@@ -1,25 +1,19 @@
 import { Router } from "express";
-import  { type Request, type Response } from "express";
+import { type Request, type Response } from "express";
+import authRouter from "./authRoutes.js";
+import budgetRouter from "./budgetRoutes.js";
+import transactionRouter from "./transactionRoutes.js";
+import payorRouter from "./payorRoutes.js";
+import providerRouter from "./providerRoutes.js";
+import accountRouter from "./accountRoutes.js";
 
 const apiv1Router = Router();
 
-apiv1Router.get("/users", (req: Request, res: Response) => {
-  res.json({ message: "Users Router" });
-});
-apiv1Router.get("/budgets", (req: Request, res: Response) => {
-  res.json({ message: "Budgets Router" });
-});
-apiv1Router.get("/transactions", (req: Request, res: Response) => {
-  res.json({ message: "Transactions Router" });
-});
-apiv1Router.get("/accounts", (req: Request, res: Response) => {
-  res.json({ message: "Accounts Router" });
-});
-apiv1Router.get("/payors", (req: Request, res: Response) => {
-  res.json({ message: "Payors Router" });
-});
-apiv1Router.get("/providers", (req: Request, res: Response) => {
-  res.json({ message: "Providers Router" });
-});
+apiv1Router.use("/auth", authRouter);
+apiv1Router.use("/budgets", budgetRouter);
+apiv1Router.use("/transactions", transactionRouter);
+apiv1Router.use("/payors", payorRouter);
+apiv1Router.use("/providers", providerRouter);
+apiv1Router.use("/accounts", accountRouter);
 
-export default apiv1Router
+export default apiv1Router;
