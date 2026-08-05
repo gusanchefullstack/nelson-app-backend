@@ -1,4 +1,4 @@
-import type { IAddress } from "../interfaces/IAddress.js";
+import type { IAddress } from "../interfaces/IProfile.js";
 
 export class Address implements IAddress {
   constructor(
