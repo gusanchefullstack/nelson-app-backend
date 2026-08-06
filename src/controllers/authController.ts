@@ -5,7 +5,17 @@ import { UserStatus } from "../../generated/prisma/enums";
 
 const userSignUp = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { username, password, status, profile } : { username: string, password: string, status: UserStatus, profile: IProfile } = req.body;
+    const {
+      username,
+      password,
+      status,
+      profile,
+    }: {
+      username: string;
+      password: string;
+      status: UserStatus;
+      profile: IProfile;
+    } = req.body;
     const user = await authServices.signUpUser(
       username,
       password,
@@ -20,7 +30,10 @@ const userSignUp = async (req: Request, res: Response, next: NextFunction) => {
 
 const userLogin = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    return res.json({ message: "Login controller" });
+    const { username, password }: { username: string; password: string } =
+      req.body;
+    const user = await authServices.loginUser(username, password);
+    return res.status(200).json({ status: "Success", data: user });
   } catch (error) {
     next(error);
   }
@@ -34,4 +47,14 @@ const userLogout = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default { userSignUp, userLogin, userLogout };
+const userDelete = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const {id} = req.params as unknown as string;
+    const user = await authServices.deleteUser(id);
+    return res.status(200).json({ status: "Deleted", data: {user} });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { userSignUp, userLogin, userLogout, userDelete };

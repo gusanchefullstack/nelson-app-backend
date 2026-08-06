@@ -30,14 +30,14 @@ model Profile {
   postalCode String
   country    String
   phone      String
-  user       User?
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String  @unique @db.Uuid
 }
 
 model User {
-  id       String @id @default(uuid()) @db.Uuid
-  username String @unique
+  id       String     @id @default(uuid()) @db.Uuid
+  username String     @unique
   password String
-  status    UserStatus @default(ACTIVE)
-  profile   Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  profileId String   @unique @db.Uuid
+  status   UserStatus @default(ACTIVE)
+  profile  Profile?
 }
