@@ -1,7 +1,7 @@
 import { type Request, type Response, type NextFunction } from "express";
-import authServices from "../services/authServices";
-import type { IProfile } from "../interfaces/IProfile";
-import { UserStatus } from "../../generated/prisma/enums";
+import authServices from "../services/authServices.js";
+import type { IProfile } from "../interfaces/IProfile.js";
+import { UserStatus } from "../../generated/prisma/enums.js";
 
 const userSignUp = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -47,9 +47,32 @@ const userLogout = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const userGetProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } : { id: string} = req.params as unknown as string;
+    const profile = await authServices.getUserProfile(id)
+    return res.status(200).json({status: "Ok", data: profile})
+  } catch (error) {
+    next(error)
+  }
+}
+
+const userUpdateProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id }: { id: string; } = req.params as unknown as string;
+    const fields = req. body
+    const user = await authServices.updateUserProfile(id, fields)
+    return res.status(200).json({status: "Ok", data: user})
+  } catch (error) {
+    next(error)
+  }
+}
+
+
+
 const userDelete = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const {id} = req.params as unknown as string;
+    const { id } : { id: string} = req.params as unknown as string;
     const user = await authServices.deleteUser(id);
     return res.status(200).json({ status: "Deleted", data: {user} });
   } catch (error) {
@@ -57,4 +80,4 @@ const userDelete = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default { userSignUp, userLogin, userLogout, userDelete };
+export default { userSignUp, userLogin, userLogout, userDelete, userGetProfile, userUpdateProfile };

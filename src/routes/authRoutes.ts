@@ -7,6 +7,8 @@ const authRouter = Router();
 authRouter.post("/signup", authController.userSignUp);
 authRouter.post("/login", authController.userLogin);
 authRouter.post("/logout", authController.userLogout);
-authRouter.delete("/unregister/:id", authController.userDelete);
+authRouter.get("/profile/:id", authController.userGetProfile);
+authRouter.put("/profile/:id", authController.userUpdateProfile);
+authRouter.delete("/unsubscribe/:id", authController.userDelete);
 
 export default authRouter
