@@ -2,6 +2,7 @@ import { type Request, type Response, type NextFunction } from "express";
 import authServices from "../services/authServices.js";
 import type { IProfile } from "../interfaces/IProfile.js";
 import { UserStatus } from "../../generated/prisma/enums.js";
+import type { AuthenticatedRequest } from "../middleware/auth.js";
 
 const userSignUp = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -39,45 +40,31 @@ const userLogin = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const userLogout = async (req: Request, res: Response, next: NextFunction) => {
+const userLogout = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    return res.json({ message: "Logout controller" });
+    const userId = req.user?.id;
+    return res.json({ message: `USer logged out ${req.user?.username}`});
   } catch (error) {
     next(error);
   }
 };
 
-const userGetProfile = async (req: Request, res: Response, next: NextFunction) => {
+const userDelete = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const { id } : { id: string} = req.params as unknown as string;
-    const profile = await authServices.getUserProfile(id)
-    return res.status(200).json({status: "Ok", data: profile})
-  } catch (error) {
-    next(error)
-  }
-}
-
-const userUpdateProfile = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { id }: { id: string; } = req.params as unknown as string;
-    const fields = req. body
-    const user = await authServices.updateUserProfile(id, fields)
-    return res.status(200).json({status: "Ok", data: user})
-  } catch (error) {
-    next(error)
-  }
-}
-
-
-
-const userDelete = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { id } : { id: string} = req.params as unknown as string;
-    const user = await authServices.deleteUser(id);
-    return res.status(200).json({ status: "Deleted", data: {user} });
+    const userId = req.user?.id;
+    const user = await authServices.deleteUser(userId!);
+    return res.status(200).json({ status: "Deleted", data: { user } });
   } catch (error) {
     next(error);
   }
 };
 
-export default { userSignUp, userLogin, userLogout, userDelete, userGetProfile, userUpdateProfile };
+export default { userSignUp, userLogin, userLogout, userDelete };

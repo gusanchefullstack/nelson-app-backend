@@ -1,25 +1,34 @@
 import { type Request, type Response, type NextFunction } from "express";
 import profileServices from "../services/profileServices.js";
+import type { AuthenticatedRequest } from "../middleware/auth.js";
 
-const userGetProfile = async (req: Request, res: Response, next: NextFunction) => {
+const userGetProfile = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const { id } : { id: string} = req.params as unknown as string;
-    const profile = await profileServices.getUserProfile(id)
-    return res.status(200).json({status: "Ok", data: profile})
+    const userId = req.user?.id;
+    const profile = await profileServices.getUserProfile(userId!);
+    return res.status(200).json({ status: "Ok", data: profile });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
-const userUpdateProfile = async (req: Request, res: Response, next: NextFunction) => {
+const userUpdateProfile = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const { id }: { id: string; } = req.params as unknown as string;
-    const fields = req. body
-    const profile = await profileServices.updateUserProfile(id, fields)
-    return res.status(200).json({status: "Ok", data: profile})
+    const userId = req.user?.id;
+    const fields = req.body;
+    const profile = await profileServices.updateUserProfile(userId!, fields);
+    return res.status(200).json({ status: "Ok", data: profile });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 export default { userGetProfile, userUpdateProfile };

@@ -1,10 +1,10 @@
 import type { IProfile } from "../interfaces/IProfile.js";
 import { prisma } from "../lib/prisma.js";
 
-const getUserProfile = async (id: string) => {
+const getUserProfile = async (userId: string) => {
   try {
     const user = await prisma.user.findFirst({
-      where: { id },
+      where: { id: userId },
       include: { profile: true },
       omit: { password: true },
     });
@@ -15,10 +15,10 @@ const getUserProfile = async (id: string) => {
   }
 };
 
-const updateUserProfile = async (id: string, fields: IProfile) => {
+const updateUserProfile = async (userId: string, fields: IProfile) => {
   try {
     const user = await prisma.user.update({
-      where: { id },
+      where: { id: userId },
       data: {
         profile: {
           update: { ...fields },

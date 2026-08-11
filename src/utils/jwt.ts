@@ -1,4 +1,4 @@
-import { SignJWT, type JWTPayload} from 'jose'
+import { SignJWT, jwtVerify,type JWTPayload} from 'jose'
 import { createSecretKey } from 'crypto'
 import config from '../config'
 
@@ -16,4 +16,14 @@ export const generateToken = (payload: JwtPayload): Promise<string> => {
     .setIssuedAt()
     .setExpirationTime(config.jwtExpiresIn) 
     .sign(secretKey)
+};
+
+export const verifyToken = async (token: string): Promise<JwtPayload> => {
+  const secretKey = createSecretKey(config.jwtSecret, 'utf-8')
+  const { payload } = await jwtVerify(token, secretKey)
+
+  return {
+    id: payload.id as string,
+    username: payload.username as string,
+  }
 }
