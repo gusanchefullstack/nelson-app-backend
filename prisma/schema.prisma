@@ -24,11 +24,25 @@ enum AccountType {
   CREDIT
 }
 
+enum TransactionsType {
+  INCOME
+  EXPENSE
+}
+
+enum ItemFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  ANNUALLY
+  ONETIME
+  OTHER_RECURRING
+}
+
 model Profile {
-  id         String  @id @default(uuid()) @db.Uuid
+  id         String   @id @default(uuid()) @db.Uuid
   firstName  String
   lastName   String
-  email      String  @unique
+  email      String   @unique
   line1      String
   line2      String?
   city       String
@@ -36,21 +50,27 @@ model Profile {
   postalCode String
   country    String
   phone      String
-  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     String  @unique @db.Uuid
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String   @unique @db.Uuid
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@map("profiles")
 }
 
 model User {
-  id        String     @id @default(uuid()) @db.Uuid
-  username  String     @unique
-  password  String
-  status    UserStatus @default(ACTIVE)
-  profile   Profile?
-  providers Provider[]
-  payors    Payor[]
-  accounts  Account[]
+  id           String        @id @default(uuid()) @db.Uuid
+  username     String        @unique
+  password     String
+  status       UserStatus    @default(ACTIVE)
+  profile      Profile?
+  providers    Provider[]
+  payors       Payor[]
+  accounts     Account[]
+  budgets      Budget[]
+  transactions Transaction[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
   @@map("users")
 }
@@ -62,6 +82,8 @@ model Provider {
   user         User          @relation(fields: [userId], references: [id])
   userId       String        @db.Uuid
   transactions Transaction[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
   @@map("providers")
 }
@@ -71,8 +93,10 @@ model Payor {
   name         String        @unique
   taxId        String        @unique
   user         User          @relation(fields: [userId], references: [id])
-  userId       String        @db.Uuid
   transactions Transaction[]
+  userId       String        @db.Uuid
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
   @@map("payors")
 }
@@ -85,6 +109,8 @@ model Account {
   transactions  Transaction[]
   user          User          @relation(fields: [userId], references: [id])
   userId        String        @db.Uuid
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   @@map("accounts")
 }
@@ -97,9 +123,71 @@ model Transaction {
   account     Account?  @relation(fields: [accountId], references: [id])
   payor       Payor?    @relation(fields: [payorId], references: [id])
   provider    Provider? @relation(fields: [providerId], references: [id])
+  user        User?     @relation(fields: [userId], references: [id])
+  budget      Budget?   @relation(fields: [budgetId], references: [id])
   accountId   String?   @db.Uuid
   payorId     String?   @db.Uuid
   providerId  String?   @db.Uuid
+  userId      String?   @db.Uuid
+  budgetId    String?   @db.Uuid
+  createdAt   DateTime  @default(now())
 
   @@map("transactions")
+}
+
+model Budget {
+  id           String        @id @default(uuid()) @db.Uuid
+  description  String
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+  categories   Category[]
+  userId       String        @db.Uuid
+  startDate    DateTime
+  endDate      DateTime
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@map("budgets")
+}
+
+model Category {
+  id          String           @id @default(uuid()) @db.Uuid
+  name        String
+  type        TransactionsType @default(EXPENSE)
+  budget      Budget           @relation(fields: [budgetId], references: [id])
+  budgetItems BudgetItem[]
+  budgetId    String           @db.Uuid
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@map("categories")
+}
+
+model BudgetItem {
+  id          String           @id @default(uuid()) @db.Uuid
+  name        String
+  description String
+  frequency   ItemFrequency    @default(MONTHLY)
+  type        TransactionsType @default(EXPENSE)
+  category    Category         @relation(fields: [categoryId], references: [id])
+  buckets     ItemBucket[]
+  categoryId  String           @db.Uuid
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@map("budgetItems")
+}
+
+model ItemBucket {
+  id              String     @id @default(uuid()) @db.Uuid
+  estimatedAmount Decimal
+  currentAmount   Decimal
+  estimatedDate   DateTime
+  currentDate     DateTime
+  budgetItem      BudgetItem @relation(fields: [budgetItemId], references: [id])
+  budgetItemId    String     @db.Uuid
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@map("itemBuckets")
 }
