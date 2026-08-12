@@ -2,76 +2,76 @@ import type { Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../lib/prisma.js";
 
 
-const getPayors = async (userId: string) => {
+const getProviders = async (userId: string) => {
   try {
     const validUser = await prisma.user.findFirst({ where: { id: userId } });
     if (!validUser) throw Error("Invalid user");
-    const payors = await prisma.payor.findMany({ where: { userId } });
-    if (payors.length === 0) throw Error("Items not found");
-    return payors;
+    const providers = await prisma.provider.findMany({ where: { userId } });
+    if (providers.length === 0) throw Error("Items not found");
+    return providers;
   } catch (error) {
     throw error;
   }
 };
 
-const getSinglePayor = async (userId: string, id: string) => {
+const getSingleProvider = async (userId: string, id: string) => {
   try {
     const validUser = await prisma.user.findFirst({ where: { id: userId } });
     if (!validUser) throw Error("Invalid user");
-    const payor = await prisma.payor.findFirstOrThrow({
+    const provider = await prisma.provider.findFirstOrThrow({
       where: { id, AND: { userId } },
     });
-    return payor;
+    return provider;
   } catch (error) {
     throw error;
   }
 };
 
-const createPayor = async (
+const createProvider = async (
   userId: string,
-  fields: Prisma.PayorCreateInput,
+  fields: Prisma.ProviderCreateInput,
 ) => {
   try {
     const validUser = await prisma.user.findFirst({ where: { id: userId } });
     if (!validUser) throw Error("Invalid user");
-    const payor = await prisma.payor.create({
+    const provider = await prisma.provider.create({
       data: { ...fields, user: { connect: { id: userId } } },
     });
-    return payor;
+    return provider;
   } catch (error) {
     throw error;
   }
 };
 
-const updatePayor = async (
+const updateProvider = async (
   userId: string,
   id: string,
-  fields: Prisma.PayorUpdateInput,
+  fields: Prisma.ProviderUpdateInput,
 ) => {
   try {
     const validUser = await prisma.user.findFirst({ where: { id: userId } });
     if (!validUser) throw Error("Invalid user");
-    const payor = await prisma.payor.update({
+    const provider = await prisma.provider.update({
       where: { id, AND: { userId } },
       data: { ...fields, user: { connect: { id: userId } } },
     });
-    return payor;
+    return provider;
   } catch (error) {
     throw error;
   }
 };
 
-const deletePayor = async (userId: string, id: string) => {
+const deleteProvider = async (userId: string, id: string) => {
   try {
     const validUser = await prisma.user.findFirst({ where: { id: userId } });
     if (!validUser) throw Error("Invalid user");
-    const payor = await prisma.payor.delete({
+    const provider = await prisma.provider.delete({
       where: { id, AND: { userId } },
     });
-    return payor;
+    return provider;
   } catch (error) {
     throw error;
   }
 };
 
-export default { getPayors, getSinglePayor, createPayor, updatePayor, deletePayor};
+export default { getProviders, getSingleProvider, createProvider, updateProvider, deleteProvider};
