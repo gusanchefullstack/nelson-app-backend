@@ -1,7 +1,10 @@
 import { Router } from "express";
 import payorController from "../controllers/payorController.js";
+import { authenticateToken } from "../middleware/auth.js";
 
 const payorRouter = Router();
+
+payorRouter.use(authenticateToken);
 
 payorRouter.post("/", payorController.createPayor);
 payorRouter.get("/", payorController.getAllPayors);
