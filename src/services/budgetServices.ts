@@ -19,7 +19,7 @@ const getSingleBudget = async (userId: string, id: string) => {
     const validUser = await prisma.user.findFirst({ where: { id: userId } });
     if (!validUser) throw Error("Invalid user");
     const budget = await prisma.budget.findFirstOrThrow({
-      where: { id, AND: { userId } }, include: { categories: true, }
+      where: { id, AND: { userId } }, include: { categories: { include: { budgetItems: { include: { buckets: true}}}, omit:{ createdAt: true, updatedAt: true}}, }, omit:{ createdAt: true, updatedAt: true}
     });
     return budget;
   } catch (error) {

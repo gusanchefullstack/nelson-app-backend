@@ -71,7 +71,7 @@ const getSingleBudgetItem = async (
     });
     if (!validCategory) throw Error("Category not found");
     const item = await prisma.budgetItem.findFirstOrThrow({
-      where: { id, AND: { categoryId: validCategory.id } },
+      where: { id, AND: { categoryId: validCategory.id } }, include:{ buckets: true}
     });
     return item;
   } catch (error) {
