@@ -9,6 +9,10 @@ const createCategory = async (
   try {
     const validUser = await prisma.user.findFirst({ where: { id: userId } });
     if (!validUser) throw Error("Invalid user");
+    const validBudget = await prisma.budget.findFirst({
+      where: { userId: validUser.id },
+    });
+    if (!validBudget) throw Error("Budget not found");
     const category = await prisma.category.create({
       data: { ...fields, budget: { connect: { id: budgetId } } },
     });
@@ -47,7 +51,7 @@ const getSingleCategory = async (
     });
     if (!validBudget) throw Error("Budget not found");
     const category = await prisma.category.findFirstOrThrow({
-      where: { id, AND: { budgetId } },
+      where: { id, AND: { budgetId } }, include:{ budgetItems: true}
     });
     return category;
   } catch (error) {
